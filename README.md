@@ -5,7 +5,7 @@ Explorations into how to program SAMD21 chips like those in Trinket M0, Arduino 
 Eventual goal: Build a crystalless SAMD21-based board and program it with a combined bin of a [UF2 bootloader](https://github.com/Microsoft/uf2-samd21/) and my own program.
 
 One preliminary idea is:
-<img src="./imgs/TrinketBlinkM0B-render-top.jpg" width="400">
+<img src="./imgs/TrinketBlinkM0B-render-top.png" width="400">
 
 Steps to get there using existing SAMD21 board (e.g. Trinket M0, FemtoUSB):
 1. Reprogram bootloader using UF2
