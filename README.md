@@ -18,8 +18,13 @@ Progress so far...
 1. Double-click button on Trinket M0 to get into UF2 bootloader
   - LED will heartbeat
   - Trinket M0 shows up as "TRINKETBOOT" disk
-2. Create new UF2 bootloader from https://github.com/Microsoft/uf2-samd21/
-  - `cd uf2-samd21 && make BOARD=trinket`
+2. Create new UF2 bootloader
+  ```
+  git clone https://github.com/Microsoft/uf2-samd21/
+  cd uf2-samd21
+  make BOARD=trinket
+  ```
+
 3. Copy resulting `update-bootloader.uf2` to disk
 4. Tada, new bootloader
 5. Edit file `boards/trinket/board_config.h` to change bootloader id strings
@@ -28,7 +33,9 @@ Progress so far...
 1. Create sketch as normal
 2. Open build tmp directory and copy out .bin file
 3. Use uf2-samd21 'bin2uf2.js' script to convert to uf2:
-  - `node uf2-samd21/scripts/bin2uf2.js sketch_nov24a.ino.bin sketch_nov24a.uf2`
+  ```
+  node uf2-samd21/scripts/bin2uf2.js sketch_nov24a.ino.bin sketch_nov24a.uf2
+  ```
 4. Copy uf2 file to TRINKETBOOT and tada programmed!
 5. TODO: Look into what bin2uf2 is doing
 
@@ -56,36 +63,39 @@ Progress so far...
   - set `target extended-remote :2331` (if not doing port 3333 above)
 6. In GDB, do standard GDB things
 
-### Update bootloader via JLink JTAG/SWD - Trinket M0 ###
+
+### Update bootloader via JLink JTAG/SWD w/ uf2-samd21 - Trinket M0 ###
 1. Connect Jlink to Trinket M0 as above
-
-2. Run "`make burn`" in uf2-samd21
-   - Uses OpenOCD with Jlink
-   - Alter 'uf2-samd21/scripts/dbgtool.js':
+2. Uses OpenOCD, but expects EDBG instead of Jlink
+3. Install openocd with `brew install openocd`
+4. Modify `uf2-samd21/scripts/dbgtool.js` to use Jlink instead of EDBG.
+   - Change openocd path to use 0.1.0 or better:
          let openocdBin = "/usr/local/bin/openocd"
-   - Alter `uf2-samd21/scripts/dbgtool.js`:
+   - Modify `uf2-samd21/scripts/dbgtool.js`:
          let zeroCfg = '/Users/tod/projects/samd/openocd-scripts/samd21-jlink.cfg'
-   - must have new openocd-script `samd21-jlink.cfg`:
-   ```
-      # set interface
-      interface jlink
-      transport select swd
-      # chip name
-      set CHIPNAME at91samd21e18
-      set ENDIAN little
-      # choose a port here
-      set telnet_port 0
-      source [find target/at91samdXX.cfg]
-    ```
+ 5. Must have new openocd-script [samd21-jlink.cfg](./samd21-jlink.cfg):
+ 6. Run "`make burn`" in `uf2-samd21`
+ 7. Alternatively, run:
+  ```
+  cd uf2-samd21
+  node ./scripts/dbgtool.js fuses
+  node ./scripts/dbgtool.js ./build/trinket/bootloader.bin
+  ```
 
-6. Program on commandline:
+### Update bootloader via JLink on commandline - Trinket M0
+1. Connect Jlink to Trinket M0 as above
+2. Install `openocd` as above
+3. Get [samd21-jlink.cfg](./samd21-jlink.cfg) as above
+4. Program on commandline:
    ```
      /usr/local/bin/openocd \
       -s /usr/local/share/openocd/scripts \
       -f ~/projects/samd/openocd-scripts/samd21-jlink.cfg \
-      -c "init; targets; reset halt; program build/trinket/bootloader.bin verify; reset; shutdown "
-      ```
-   - this doesn't work for Arduino sketches yet, why?
+      -c "init; targets; reset halt; program ~/projects/samd/uf2-samd21/build/trinket/bootloader.bin verify; reset; shutdown "
+    ```
+5. Can also erase entire chip: `-c "at91samd chip-erase"`
+- TODO: Get programming to work for Arduino sketches
+  (specifically, can program but sketch doesn't run)
 
 
 
