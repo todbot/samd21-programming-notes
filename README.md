@@ -41,9 +41,9 @@ Progress so far...
   | green | Jlink SWDIO | Trinket M0 SWD solder pad |
   | blue  | Jlink SWCLK | Trinket M0 SWC solder pad |
 ```
-![jlink-swd-pinout](./imgs/jlink-swd-pinout.png)
-![jlink-swd](./imgs/jlink-swd.jpg)
-![trinketm0-swd](./imgs/trinketm0-swd.jpg)
+<img src="./imgs/jlink-swd-pinout.png" width="400">
+<img src="./imgs/jlink-swd.jpg" width="400">
+<img src="./imgs/trinketm0-swd.jpg" width="400">
 
 ### GDB to chip via Jlink JTAG/SWD  - Trinket M0 ###
 
