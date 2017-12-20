@@ -44,14 +44,17 @@ Progress so far...
 5. TODO: Look into what bin2uf2 is doing
 
 ### Connecting Jlink JTAG/SWD to Trinket M0 ###
-2. Solder pads to SWD & SWC pins on back of Trinket M0
-3. Connect following pins from JLink to Trinket M0:
+1. Solder pads to SWD & SWC pins on back of Trinket M0
+2. Connect following pins from JLink to Trinket M0:
 ```
   | black | Jlink Gnd   | Trinket M0 Gnd pin |
   | red   | Jlink VTref | Trinket M0 3v3 pin |
   | green | Jlink SWDIO | Trinket M0 SWD solder pad |
   | blue  | Jlink SWCLK | Trinket M0 SWC solder pad |
 ```
+3. Power Trinket M0 via USB. Power Jlink via USB.
+"VTref" is used to detect target power is applied.
+
 <img src="./imgs/jlink-swd-pinout.png" width="400">
 <img src="./imgs/jlink-swd.jpg" width="400">
 <img src="./imgs/trinketm0-swd.jpg" width="400">
@@ -59,7 +62,6 @@ Progress so far...
 ### GDB to chip via Jlink JTAG/SWD  - Trinket M0 ###
 
 1. Connect Jlink to Trinket M0 as above
-
 2. Mostly from: https://learn.adafruit.com/debugging-the-samd21-with-gdb/
 3. Install J-Link software from https://www.segger.com/downloads/jlink/
 4. Run `/Applications/SEGGER/JLink/JLinkGDBServer -if SWD -device ATSAMD21E18 -port 3333`
@@ -95,12 +97,16 @@ Progress so far...
      /usr/local/bin/openocd \
       -s /usr/local/share/openocd/scripts \
       -f ~/projects/samd/openocd-scripts/samd21-jlink.cfg \
-      -c "init; targets; reset halt; program ~/projects/samd/uf2-samd21/build/trinket/bootloader.bin verify; reset; shutdown "
+      -c "init; targets; halt; program /Users/tod/projects/samd/uf2-samd21/build/trinket/bootloader.bin verify reset; shutdown"
     ```
-5. Can also erase entire chip: `-c "at91samd chip-erase"`
+5. Can also erase entire chip: `-c "init; targets; at91samd chip-erase; shutdown"`
+    
 - TODO: Get programming to work for Arduino sketches
   (specifically, can program but sketch doesn't run)
 
+6. TODO: try:
+
+   `-c "init; targets; reset halt; program sketch.bin 0x00002000`
 
 
 
