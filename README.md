@@ -99,8 +99,16 @@ Progress so far...
       -f ~/projects/samd/openocd-scripts/samd21-jlink.cfg \
       -c "init; targets; halt; program /Users/tod/projects/samd/uf2-samd21/build/trinket/bootloader.bin verify reset; shutdown"
     ```
-5. Can also erase entire chip: `-c "init; targets; at91samd chip-erase; shutdown"`
-    
+5. Can also erase entire chip:
+   ```
+   openocd -f ~/projects/samd/openocd-scripts/samd21-jlink.cfg -c "init; targets; at91samd chip-erase; shutdown"`
+   ```
+6. Or just list which targets are connected:
+   ```
+     openocd -f ~/projects/samd/openocd-scripts/samd21-jlink.cfg -c "init; targets; shutdown"
+   ```
+
+
 - TODO: Get programming to work for Arduino sketches
   (specifically, can program but sketch doesn't run)
 
