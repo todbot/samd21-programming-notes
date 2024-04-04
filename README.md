@@ -144,8 +144,8 @@ to convert to uf2:
   
 5. You can also choose to install `telnet` and do these commands interactively:
 
-In one terminal window run `openocd`:
-```
+  In one terminal window run `openocd`:
+  ```
 % openocd -f ./openocd_atmel-ice_samd21.cfg 
 Open On-Chip Debugger 0.12.0
 Licensed under GNU GPL v2
@@ -167,11 +167,11 @@ Info : [at91samd21e18.cpu] Cortex-M0+ r0p1 processor detected
 Info : [at91samd21e18.cpu] target has 4 breakpoints, 2 watchpoints
 Info : starting gdb server for at91samd21e18.cpu on 3333
 Info : Listening on port 3333 for gdb connections
-```
+  ```
 
-And in another terminal window, run `telnet` and then openocd commands:
+  And in another terminal window, run `telnet` and then openocd commands:
 
-```
+  ```
 % telnet localhost 4444     
 Trying ::1...
 telnet: connect to address ::1: Connection refused
@@ -201,7 +201,7 @@ xPSR: 0x21000000 pc: 0x00000264 msp: 0x20002de0
 ** Verify Started **
 ** Verified OK **
 ** Resetting Target **
-```
+  ```
 
 ### Update bootlaoder via OpenOCD and STLink v2 - Trinket M0
 
