@@ -1,6 +1,8 @@
 # SAMD21 Programming Notes
 
-Explorations into how to program SAMD21 chips like those in Trinket M0, Arduino Zero, etc.
+Explorations into how to program SAMD21 chips like those in
+[Trinket M0](https://learn.adafruit.com/adafruit-trinket-m0-circuitpython-arduino/pinouts), 
+Arduino Zero, etc.
 
 How to program a SAMD21 (or other ARM chip really) using a variety of methods, 
 in order to burn a [UF2 bootloader](https://github.com/Microsoft/uf2-samd21/) 
@@ -58,24 +60,14 @@ to convert to uf2:
 ```
 
 3. Power Trinket M0 via USB. Power Jlink via USB.
-"VTref" is used to detect target power is applied.
+
+"VTref" is used to detect target power is applied. It is a signal TO the programmer.
 
 <img src="./imgs/jlink-swd-pinout-from-cable.png" width="400">
 
 <img src="./imgs/jlink-swd.jpg" width="400">
 
 <img src="./imgs/trinketm0-swd.jpg" width="400">
-
-
-### GDB to chip via Jlink JTAG/SWD  - Trinket M0 ###
-
-1. Connect Jlink to Trinket M0 as above
-2. Mostly from: https://learn.adafruit.com/debugging-the-samd21-with-gdb/
-3. Install J-Link software from https://www.segger.com/downloads/jlink/
-4. Run `/Applications/SEGGER/JLink/JLinkGDBServer -if SWD -device ATSAMD21E18 -port 3333`
-5. Run `arm-none-eabi-gdb-py`
-  - set `target extended-remote :2331` (if not doing port 3333 above)
-6. In GDB, do standard GDB things
 
 
 ### Update bootloader via JLink JTAG/SWD w/ uf2-samd21 - Trinket M0 ###
@@ -105,9 +97,18 @@ to convert to uf2:
 5. Program on commandline:
    ```
    openocd -f ./openocd_jlink_samd21.cfg \
-      -c "init; targets; halt; program bootloader-trinket_m0-v3.16.0.bin verify reset; shutdown"
+      -c "init; targets; halt; " \
+      -c "at91samd bootloader 0;" \
+      -c "program bootloader-trinket_m0-v3.16.0.bin verify;" \
+      -c "at91samd bootloader 8192; reset; shutdown" 
     ```
-6. Can also erase entire chip:
+    
+    **NOTE:** the `at91samd bootloader 0;` disables bootloader protection and 
+    allows you to rewrite the bootloader. The `at91samd bootloader 8192;`
+    re-enables bootloader protection.
+    (from this [adfruit forum post](https://forums.adafruit.com/viewtopic.php?t=204268))
+    
+6. Can also erase entire chip  (assuming no bootloader lock):
    ```
    openocd -f ./openocd_jlink_samd21.cfg -c "init; targets; at91samd chip-erase; shutdown"`
    ```
@@ -136,10 +137,19 @@ to convert to uf2:
 3. Connect Atmel ICE similar to JLink by using adapter like in image below
 4. Program on commandline:
    ```
-   openocd -f ./openocd_stlink_samd21.cfg \
-      -c "init; targets; halt; program bootloader-trinket_m0-v3.16.0.bin verify reset; shutdown"
+   openocd -f ./openocd_jlink_samd21.cfg \
+      -c "init; targets; halt; " \
+      -c "at91samd bootloader 0;" \
+      -c "program bootloader-trinket_m0-v3.16.0.bin verify;" \
+      -c "at91samd bootloader 8192; reset; shutdown" 
     ```
-  <img src="./imgs/trinketm0_atmel-ice.jpg" width="500">
+    
+    **NOTE:** the `at91samd bootloader 0;` disables bootloader protection and 
+    allows you to rewrite the bootloader. The `at91samd bootloader 8192;`
+    re-enables bootloader protection.
+    (from this [adfruit forum post](https://forums.adafruit.com/viewtopic.php?t=204268))
+    
+    <img src="./imgs/trinketm0_atmel-ice.jpg" width="500">
   
   
 5. You can also choose to install `telnet` and do these commands interactively:
@@ -189,18 +199,24 @@ Open On-Chip Debugger
 [at91samd21e18.cpu] halted due to debug-request, current mode: Thread 
 xPSR: 0x21000000 pc: 0x00000264 msp: 0x20002de0
 
+> at91samd bootloader 0
+
 > flash erase_sector 0 1 last                   
 SAMD MCU: SAMD21E18A (256KB Flash, 32KB RAM)
 erased sectors 1 through 1023 on flash bank 0 in 6.106292s
 
-> program bootloader-trinket_m0-v3.16.0.bin verify reset
+> program bootloader-trinket_m0-v3.16.0.bin verify 
 [at91samd21e18.cpu] halted due to debug-request, current mode: Thread 
 xPSR: 0x21000000 pc: 0x00000264 msp: 0x20002de0
 ** Programming Started **
 ** Programming Finished **
 ** Verify Started **
 ** Verified OK **
-** Resetting Target **
+
+> at91samd bootloader 8192
+
+> reset
+> shutdown
   ```
 
 ### Update bootlaoder via OpenOCD and STLink v2 - Trinket M0
